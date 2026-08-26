@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: dsa-practice-coach-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npx prisma generate
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      # Secrets below are intentionally NOT stored in this file (sync:
+      # false means Render prompts for the value in its dashboard instead
+      # of reading it from here) — this file is committed to git, so
+      # nothing sensitive can live in it.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: CLIENT_ORIGIN
+        sync: false

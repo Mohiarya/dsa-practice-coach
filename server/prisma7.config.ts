@@ -9,6 +9,11 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    // Prisma's migration engine (unlike the app's runtime PrismaLibSql
+    // adapter in db.js) only ever supports a local `file:` SQLite
+    // connection — it cannot reach Turso directly. Migrations are authored
+    // here against a local file, then the generated SQL is applied to
+    // Turso by hand via `turso db shell` (see README).
+    url: "file:./dev.db",
   },
 });
