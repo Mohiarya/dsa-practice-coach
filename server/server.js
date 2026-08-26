@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import { problemsRouter } from "./routes/problems.js";
+import { statsRouter } from "./routes/stats.js";
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/problems", problemsRouter);
+app.use("/api/stats", statsRouter);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
