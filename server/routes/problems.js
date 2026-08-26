@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { prisma } from "../db.js";
 import { nextReviewState, QUALITY } from "../sm2.js";
+import { getHint } from "../hint.js";
 
 export const problemsRouter = Router();
 
@@ -66,4 +67,33 @@ problemsRouter.patch("/:id/review", async (req, res) => {
   });
 
   res.json(updated);
+});
+
+// Ask for a Socratic hint on a problem the student is stuck on
+problemsRouter.post("/:id/hint", async (req, res) => {
+  const id = Number(req.params.id);
+  const { stuckPoint } = req.body;
+
+  if (!stuckPoint) {
+    return res.status(400).json({ error: "stuckPoint is required — describe what you've tried / where you're stuck" });
+  }
+
+  const problem = await prisma.problem.findUnique({ where: { id } });
+  if (!problem) {
+    return res.status(404).json({ error: "problem not found" });
+  }
+
+  try {
+    const hint = await getHint({
+      title: problem.title,
+      pattern: problem.pattern,
+      difficulty: problem.difficulty,
+      notes: problem.notes,
+      stuckPoint,
+    });
+    res.json({ hint });
+  } catch (err) {
+    console.error("Hint generation failed:", err);
+    res.status(502).json({ error: "Hint generation failed — try again in a moment" });
+  }
 });
