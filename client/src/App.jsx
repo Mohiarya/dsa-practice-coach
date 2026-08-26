@@ -23,15 +23,17 @@ function App() {
   }
 
   return (
-    <div>
+    <div className="app">
       <h1>DSA Practice Coach</h1>
 
       <DueReview onReviewed={fetchProblems} />
 
       <AddProblemForm onAdded={handleAdded} />
 
-      <h2>Your problems</h2>
-      {loading ? <p>Loading...</p> : <ProblemList problems={problems} />}
+      <section>
+        <h2>Your problems</h2>
+        {loading ? <p className="empty-state">Loading...</p> : <ProblemList problems={problems} />}
+      </section>
     </div>
   );
 }

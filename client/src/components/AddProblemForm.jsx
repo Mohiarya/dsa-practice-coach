@@ -52,46 +52,48 @@ export default function AddProblemForm({ onAdded }) {
     <form onSubmit={handleSubmit}>
       <h2>Log a problem</h2>
 
-      <label>
-        Title
-        <input
-          value={form.title}
-          onChange={(e) => updateField("title", e.target.value)}
-          placeholder="Two Sum"
-        />
-      </label>
+      <div className="field-grid">
+        <label>
+          Title
+          <input
+            value={form.title}
+            onChange={(e) => updateField("title", e.target.value)}
+            placeholder="Two Sum"
+          />
+        </label>
 
-      <label>
-        LeetCode URL (optional)
-        <input
-          value={form.url}
-          onChange={(e) => updateField("url", e.target.value)}
-          placeholder="https://leetcode.com/problems/two-sum/"
-        />
-      </label>
+        <label>
+          LeetCode URL (optional)
+          <input
+            value={form.url}
+            onChange={(e) => updateField("url", e.target.value)}
+            placeholder="https://leetcode.com/problems/two-sum/"
+          />
+        </label>
 
-      <label>
-        Pattern
-        <input
-          value={form.pattern}
-          onChange={(e) => updateField("pattern", e.target.value)}
-          placeholder="hashing, sliding-window, ..."
-        />
-      </label>
+        <label>
+          Pattern
+          <input
+            value={form.pattern}
+            onChange={(e) => updateField("pattern", e.target.value)}
+            placeholder="hashing, sliding-window, ..."
+          />
+        </label>
 
-      <label>
-        Difficulty
-        <select
-          value={form.difficulty}
-          onChange={(e) => updateField("difficulty", e.target.value)}
-        >
-          {DIFFICULTIES.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-      </label>
+        <label>
+          Difficulty
+          <select
+            value={form.difficulty}
+            onChange={(e) => updateField("difficulty", e.target.value)}
+          >
+            {DIFFICULTIES.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
 
       <label>
         Notes (optional)
@@ -104,7 +106,7 @@ export default function AddProblemForm({ onAdded }) {
 
       {error && <p role="alert">{error}</p>}
 
-      <button type="submit" disabled={submitting}>
+      <button type="submit" disabled={submitting} style={{ marginTop: 14 }}>
         {submitting ? "Saving..." : "Add problem"}
       </button>
     </form>

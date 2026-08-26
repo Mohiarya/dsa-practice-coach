@@ -41,24 +41,34 @@ export default function HintBox({ problemId }) {
   }
 
   if (!open) {
-    return <button onClick={() => setOpen(true)}>Get a hint</button>;
+    return (
+      <div className="hint-box">
+        <button className="btn-secondary" onClick={() => setOpen(true)}>
+          Get a hint
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div>
-      <form onSubmit={requestHint}>
+    <div className="hint-box">
+      <form className="hint-form" onSubmit={requestHint}>
         <textarea
           value={stuckPoint}
           onChange={(e) => setStuckPoint(e.target.value)}
           placeholder="What have you tried? Where are you stuck?"
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" className="btn-secondary" disabled={loading} style={{ alignSelf: "flex-start" }}>
           {loading ? "Thinking..." : "Ask for a hint"}
         </button>
       </form>
 
       {error && <p role="alert">{error}</p>}
-      {hint && <p><strong>Hint:</strong> {hint}</p>}
+      {hint && (
+        <p className="hint-result">
+          <strong>Hint:</strong> {hint}
+        </p>
+      )}
     </div>
   );
 }

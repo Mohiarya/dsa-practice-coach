@@ -32,20 +32,24 @@ export default function DueReview({ onReviewed }) {
     onReviewed();
   }
 
-  if (loading) return <p>Loading due problems...</p>;
+  if (loading) return <p className="empty-state">Loading due problems...</p>;
 
   return (
     <section>
       <h2>Due for review today ({dueProblems.length})</h2>
-      {dueProblems.length === 0 && <p>Nothing due right now — nice.</p>}
+      {dueProblems.length === 0 && <p className="empty-state">Nothing due right now — nice.</p>}
       <ul>
         {dueProblems.map((p) => (
-          <li key={p.id}>
-            <strong>{p.title}</strong> — {p.difficulty} — {p.pattern}
-            <div>
+          <li key={p.id} className="card">
+            <div className="card-title">{p.title}</div>
+            <div className="card-meta">
+              {p.difficulty} &middot; {p.pattern}
+            </div>
+            <div className="review-buttons">
               {QUALITY_BUTTONS.map((q) => (
                 <button
                   key={q.value}
+                  className="btn-secondary"
                   title={q.hint}
                   onClick={() => submitReview(p.id, q.value)}
                 >
