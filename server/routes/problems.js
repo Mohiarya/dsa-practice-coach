@@ -1,4 +1,5 @@
 import { Router } from "express";
+import rateLimit from "express-rate-limit";
 import { prisma } from "../db.js";
 import { nextReviewState, QUALITY } from "../sm2.js";
 import { getHint } from "../hint.js";
@@ -6,6 +7,18 @@ import { getHint } from "../hint.js";
 export const problemsRouter = Router();
 
 const VALID_QUALITIES = Object.values(QUALITY);
+
+// Each hint request costs a real Gemini API call against our quota, and
+// this route has no auth — a public deployment needs some limit on how
+// often one visitor can hit it. 10 requests / 10 minutes per IP is
+// generous for genuine use, tight enough to stop scripted abuse.
+const hintLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many hint requests — please wait a few minutes and try again." },
+});
 
 // Create a new problem entry
 problemsRouter.post("/", async (req, res) => {
@@ -70,7 +83,7 @@ problemsRouter.patch("/:id/review", async (req, res) => {
 });
 
 // Ask for a Socratic hint on a problem the student is stuck on
-problemsRouter.post("/:id/hint", async (req, res) => {
+problemsRouter.post("/:id/hint", hintLimiter, async (req, res) => {
   const id = Number(req.params.id);
   const { stuckPoint } = req.body;
 
