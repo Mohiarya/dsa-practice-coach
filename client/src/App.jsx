@@ -4,6 +4,7 @@ import AddProblemForm from "./components/AddProblemForm";
 import ProblemList from "./components/ProblemList";
 import DueReview from "./components/DueReview";
 import Stats from "./components/Stats";
+import ThemeToggle from "./components/ThemeToggle";
 
 function App() {
   const [problems, setProblems] = useState([]);
@@ -32,7 +33,10 @@ function App() {
 
   return (
     <div className="app">
-      <h1>DSA Practice Coach</h1>
+      <header className="app-header">
+        <h1>DSA Practice Coach</h1>
+        <ThemeToggle />
+      </header>
 
       <Stats refreshTrigger={refreshTrigger} />
 
