@@ -2,16 +2,20 @@ import { useEffect, useState } from "react";
 import { API_BASE } from "./api";
 import AddProblemForm from "./components/AddProblemForm";
 import ProblemList from "./components/ProblemList";
+import DueReview from "./components/DueReview";
 
 function App() {
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetch(`${API_BASE}/problems`)
+  function fetchProblems() {
+    return fetch(`${API_BASE}/problems`)
       .then((res) => res.json())
-      .then((data) => setProblems(data))
-      .finally(() => setLoading(false));
+      .then((data) => setProblems(data));
+  }
+
+  useEffect(() => {
+    fetchProblems().finally(() => setLoading(false));
   }, []);
 
   function handleAdded(newProblem) {
@@ -21,6 +25,8 @@ function App() {
   return (
     <div>
       <h1>DSA Practice Coach</h1>
+
+      <DueReview onReviewed={fetchProblems} />
 
       <AddProblemForm onAdded={handleAdded} />
 
