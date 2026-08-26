@@ -1,3 +1,5 @@
+import HintBox from "./HintBox";
+
 export default function ProblemList({ problems }) {
   if (problems.length === 0) {
     return <p>No problems logged yet — add one above.</p>;
@@ -14,6 +16,9 @@ export default function ProblemList({ problems }) {
               (<a href={p.url} target="_blank" rel="noreferrer">link</a>)
             </>
           )}
+          <div>
+            <HintBox problemId={p.id} />
+          </div>
         </li>
       ))}
     </ul>
