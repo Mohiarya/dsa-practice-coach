@@ -50,11 +50,19 @@ authRouter.post("/signup", authLimiter, async (req, res) => {
     data: { email, passwordHash, name: name || null },
   });
 
-  // See auth.js: only ever fires for the very first account, and only
-  // once — deliberately, not incidentally.
-  await claimOrphanedProblemsIfFirstUser(prisma, user.id);
+  try {
+    // See auth.js: only ever fires for the very first account, and only
+    // once — deliberately, not incidentally.
+    await claimOrphanedProblemsIfFirstUser(prisma, user.id);
+    res.cookie(COOKIE_NAME, signToken(user.id), sessionCookieOptions());
+  } catch (err) {
+    // The account row exists at this point either way. If anything after
+    // creating it fails, undo it rather than leaving a real password hash
+    // stored with no way for the client to ever get a session for it.
+    await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
+    throw err;
+  }
 
-  res.cookie(COOKIE_NAME, signToken(user.id), sessionCookieOptions());
   res.status(201).json(publicUser(user));
 });
 
