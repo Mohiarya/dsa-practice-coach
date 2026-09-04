@@ -11,6 +11,18 @@ datasource db {
   provider = "sqlite"
 }
 
+// A user account. Lightweight, single-purpose auth — email + a bcrypt
+// hash, nothing more. See auth.js for the hashing/token logic.
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+
+  problems Problem[]
+}
+
 model Problem {
   id         Int      @id @default(autoincrement())
   title      String
@@ -22,9 +34,39 @@ model Problem {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  // Spaced repetition (SM-2 algorithm) state
+  // Spaced repetition (SM-2 algorithm) state — current scheduling state
+  // only. Review is the historical event log; this stays the live state.
   easeFactor     Float    @default(2.5)
   interval       Int      @default(0)
   repetitions    Int      @default(0)
   nextReviewDate DateTime @default(now())
+
+  // Nullable deliberately, not a migration shortcut: the app already had
+  // one real Problem row before accounts existed. See auth.js's
+  // claimOrphanedProblems() — the FIRST account ever created takes
+  // ownership of any pre-existing userId-less rows, once, at signup. Every
+  // route that reads/writes problems requires auth and filters by userId,
+  // so a still-orphaned row (userId null) is simply invisible to everyone
+  // until claimed — never exposed, never deleted.
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reviews Review[]
+
+  @@index([userId])
+}
+
+// One row per submitted review rating — an append-only historical log,
+// separate from Problem's SM-2 fields (which only ever hold the *current*
+// state). This is what makes real historical analytics possible: reviews
+// per day, rating distribution, retention over time, etc.
+model Review {
+  id         Int      @id @default(autoincrement())
+  problemId  Int
+  problem    Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  quality    Int
+  reviewedAt DateTime @default(now())
+
+  @@index([problemId])
+  @@index([reviewedAt])
 }

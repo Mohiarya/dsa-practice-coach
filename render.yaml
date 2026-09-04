@@ -9,6 +9,13 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.14.0
+      # Not a secret, but load-bearing: the session cookie's Secure/
+      # SameSite=None attributes (required for it to survive a cross-site
+      # Vercel-to-Render request at all) only turn on when this is exactly
+      # "production" — see server/cookie.js. Render doesn't set this on
+      # its own, so it's declared explicitly rather than assumed.
+      - key: NODE_ENV
+        value: production
       # Secrets below are intentionally NOT stored in this file (sync:
       # false means Render prompts for the value in its dashboard instead
       # of reading it from here) — this file is committed to git, so
@@ -20,4 +27,9 @@ services:
       - key: TURSO_AUTH_TOKEN
         sync: false
       - key: CLIENT_ORIGIN
+        sync: false
+      # Signs/verifies session cookies (see server/auth.js) — generate a
+      # long random value once and set it in Render's dashboard, e.g.:
+      # node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+      - key: JWT_SECRET
         sync: false
